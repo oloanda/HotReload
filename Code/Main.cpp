@@ -29,8 +29,10 @@ static bool Running = false;
 static int gScreenWidth = 1024;
 static int gScreenHeight = 768;
 static bool wasScreenShot = false;
-static bool screenShot = false;
+static bool screenShot = true;
 static int frameCounter = 0;
+
+//TODO(o.luanda) : Solve z-fighting
 
 
 static void FatalError(const char* message)
@@ -215,37 +217,6 @@ static void GetWglFunctions()
 
 }
 
-#if 0
-void ShowFPS(GLFWwindow* window)
-{
-    static double previousSeconds = 0.0;
-    static int frameCount = 0;
-    double elapsedSeconds;
-    double currentSeconds = glfwGetTime();
-
-    elapsedSeconds = currentSeconds - previousSeconds;
-
-
-    if (elapsedSeconds > 0.25)
-    {
-        previousSeconds = currentSeconds;
-        double fps = (double)frameCount / elapsedSeconds;
-        double msPerFrame = 1000.0 / fps;
-
-        std::ostringstream outs;
-        outs.precision(3);
-        outs << std::fixed
-            << APP_TITLE << "    "
-            << "FPS: " << fps << "    "
-            << "Frame Time: " << msPerFrame << " (ms)";
-        glfwSetWindowTitle(window, outs.str().c_str());
-
-        frameCount = 0;
-    }
-
-    frameCount++;
-}
-#endif
 
 static void InitWin32OpenGL(HWND window)
 {
@@ -392,27 +363,6 @@ static void CompileShader(Memory* memory ,Shader* shader)
 
 }
 
-void DrawGrid(Model& model, Shader* shader, Camera& camera)
-{
-
-
-    for(int i = 0; i < model.meshCount; i++)
-    {
-        glBindProgramPipeline(shader->pipeline);
-        glBindVertexArray(model.meshes[i].VAO);
-
-        glProgramUniformMatrix4fv(shader->vertex, 0, 1, GL_TRUE,mat4().asArray);
-        glProgramUniformMatrix4fv(shader->vertex, 1, 1, GL_TRUE,camera.view.asArray);
-        glProgramUniformMatrix4fv(shader->vertex, 2, 1, GL_TRUE, camera.projection.asArray);
-
-        glDrawElements(GL_LINES, model.meshes[i].indexCount, GL_UNSIGNED_INT, nullptr);
-        //glDrawElements(GL_TRIANGLES, model.meshes[i].indexCount, GL_UNSIGNED_INT, nullptr);
-
-        glBindProgramPipeline(0);
-
-
-    }
-}
 
 void DrawModel(Model& model,Shader* shader, Camera& camera)
 {
@@ -449,7 +399,6 @@ static void SaveScreenShot(Memory* memory, WindowDimension windowDimension)
 {
     static size_t count = 1;
     char tempBufffer[128];
-    //snprintf(tempBufffer, 128, "screeshot%02zX.png", count);
     snprintf(tempBufffer, 128, "screeshot%02zd.png", count);
     count++;
 
@@ -532,10 +481,8 @@ static void UpdateCamera(Camera& camera,WindowDimension windowDimension,Input& i
 
     camera.view = Transform(vec3(1, -1, 1), vec3(camera.rotation.x, camera.rotation.y, 0), camera.position);
     camera.view = FastInverse(camera.view);
-    camera.projection = Projection(45.0f, (float)gScreenWidth / (float)gScreenHeight, 0.1f, 1000.0f);
+    camera.projection = Projection(60.0f, (float)gScreenWidth / (float)gScreenHeight, 25.0f, 10000.0f);
 
-    //camera.view = FastInverse(camera.view);
-    //camera.projection = Transpose(Projection(60.0f, (float)windowDimension.width / (float)windowDimension.height, 0.1f, 1000.0f));
     camera.viewProjection = camera.view * camera.projection;
 
 
@@ -554,160 +501,6 @@ static void ProcessInput(Input& input,WindowDimension windowDimension,Memory* me
     }
     wasScreenShot = input.F;
 }
-
-void  InitSkybox(Skybox& skybox)
-{
-    const int vertexCount = 8;
-    const int indexCount = 36;
-    
-    
-    vec3 vertices[vertexCount];
-    vertices[0]=vec3(-0.5f,-0.5f,-0.5f);
-    vertices[1]=vec3( 0.5f,-0.5f,-0.5f);
-    vertices[2]=vec3( 0.5f, 0.5f,-0.5f);
-    vertices[3]=vec3(-0.5f, 0.5f,-0.5f);
-    vertices[4]=vec3(-0.5f,-0.5f, 0.5f);
-    vertices[5]=vec3( 0.5f,-0.5f, 0.5f);
-    vertices[6]=vec3( 0.5f, 0.5f, 0.5f);
-    vertices[7]=vec3(-0.5f, 0.5f, 0.5f); 
-    
-
-    unsigned int indices[indexCount];
-    unsigned int trianglesIndices[36] = 
-    {
-        //bottom face
-        0, 4, 5,
-        5, 1, 0, 
-        
-        //top face
-        3, 6, 7,
-        3, 2, 6,
-
-        //front face
-        7, 6, 4,
-        6, 5, 4,
-
-        //back face
-        2, 3, 1,
-        3, 0, 1,
-
-        //left face 
-        3, 7, 0,
-        7, 4, 0,
-
-        //right face 
-        6, 2, 5,
-        2, 1, 5
-    };
-
-    for(int i = 0; i < 36; i++)
-        indices[i] = trianglesIndices[i];
-
-    
-    glCreateBuffers(1, &skybox.VBO);
-    glNamedBufferStorage(skybox.VBO,vertexCount *  sizeof(vec3), vertices, GL_DYNAMIC_STORAGE_BIT);
-
-    glCreateBuffers(1, &skybox.EBO);
-    glNamedBufferStorage(skybox.EBO,indexCount * sizeof(unsigned int), indices, GL_DYNAMIC_STORAGE_BIT);
-
-    glCreateVertexArrays(1, &skybox.VAO);
-    glVertexArrayVertexBuffer(skybox.VAO, 0, skybox.VBO, 0, sizeof(vec3));
-    glVertexArrayElementBuffer(skybox.VAO, skybox.EBO);
-
-    glEnableVertexArrayAttrib(skybox.VAO, 0);
-    glVertexArrayAttribFormat(skybox.VAO, 0, 3, GL_FLOAT, GL_FALSE, 0);
-    glVertexArrayAttribBinding(skybox.VAO, 0, 0);
-
-
-
-    const char* textureNames[6] = {"../Assets/posx.png",
-								"../Assets/negx.png",
-								"../Assets/posy.png",
-								"../Assets/negy.png",
-								"../Assets/posz.png",
-								"../Assets/negz.png"};
-
-
-
-/*
-
-    const char* textureNames[6] = {"../Assets/pposx.jpg",
-								"../Assets/pnegx.jpg",
-								"../Assets/pposy.jpg",
-								"../Assets/pnegy.jpg",
-								"../Assets/pposz.jpg",
-								"../Assets/pnegz.jpg"};
-*/
-
-
-/*
-    const char* textureNames[6] = {"../Assets/night_posx.png",
-								"../Assets/night_negx.png",
-								"../Assets/night_posy.png",
-								"../Assets/night_negy.png",
-								"../Assets/night_posz.png",
-								"../Assets/night_negz.png"};
-*/
-    //night_posx
-	int texture_widths[6];
-	int texture_heights[6];
-	int channels[6];
-	GLubyte* Data[6];
-
-	printf("Loading skybox images: ...\n");
-	for(int i=0;i<6;i++) 
-    {
-		printf("\tLoading: %s ...", textureNames[i]);
-		Data[i] = stbi_load(textureNames[i],	&texture_widths[i], &texture_heights[i], &channels[i], 0);
-		printf("done.\n");
-	}
-
-
-    glCreateTextures(GL_TEXTURE_CUBE_MAP,1, &skybox.texture);
-    GLint sTexture = 0;
-    glBindTextureUnit(sTexture, skybox.texture);
-
-	
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-    float borderColor[] = {1.0f, 1.0f, 1.0f, 1.0f};
-    glTexParameterfv(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_BORDER_COLOR, borderColor);
-
-	
-
-
-	GLint format = (channels[0]==4) ? GL_RGBA : GL_RGB;
-    
-	for(int i=0;i<6;i++) 
-    {
-
-		glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, format, texture_widths[i], texture_heights[i], 0, format, GL_UNSIGNED_BYTE, Data[i]);
-		stbi_image_free(Data[i]);
-	} 
-}
-
-void DrawSkybox(Skybox& skybox, Shader* shader, Camera& camera)
-{
-    mat4 model = Scale(vec3(1000, 1000, 1000));
-    model = model * ZRotation(180);
-    //model = model * XRotation(-107) * YRotation(-23);
-    mat4 modelviewProj = model * camera.viewProjection;
-
-    glBindProgramPipeline(shader->pipeline);
-    glBindVertexArray(skybox.VAO);
-
-    glProgramUniformMatrix4fv(shader->vertex, 0, 1, GL_TRUE, modelviewProj.asArray);
-
-    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
-
-    glBindProgramPipeline(0);
-    glBindVertexArray(0);
-}
-
 
 struct MatrixBlock
 {
