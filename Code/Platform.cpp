@@ -195,7 +195,6 @@ extern "C" UPDATE_GAME(UpdateGame)
     *transforms[1] = *transforms[1] * Translation(vec3(50, 0, 300));
 
     //Fiora
-
     *transforms[2]  = Transform(vec3(0.6f, 0.6f, 0.6f), vec3(180, -45, 0), 
     vec3(-160, 0, 300));
 
@@ -220,7 +219,6 @@ extern "C" UPDATE_GAME(UpdateGame)
 
     //Cube
     *transforms[6] = Scale(vec3(30, 30, 30));
-    //*transforms[6] = Scale(vec3(100, 100, 100));
     *transforms[6] = *transforms[6] * Translation(vec3(-110, -15, 100));
 
 }
