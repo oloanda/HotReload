@@ -8,7 +8,7 @@ SET PLATFORM_LINKER_FLAGS=-incremental:no -opt:ref -NODEFAULTLIB:MSVCRT opengl32
 SET LINKER_FLAGS=-incremental:no -opt:ref -NODEFAULTLIB:MSVCRT
 SET SRC=..\Code\Vectors.cpp ..\Code\Matrices.cpp
 
-del *.pdb>NULL 2>NULL
+del *.pdb>NUL 2>NUL
 echo WAITING FOR PDB > lock.tmp
 cl %COMMOM_COMPILER_FLAGS% ..\Code\Platform.cpp ..\Code\Vectors.cpp ..\Code\Matrices.cpp /LD /link%PLATFORM_LINKER_FLAGS% -PDB:Platform%random%.pdb /EXPORT:UpdateGame
 del lock.tmp
