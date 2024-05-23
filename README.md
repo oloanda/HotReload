@@ -15,11 +15,6 @@ While the program is running open the file platform, find the function
 UPDATE and change the scale, position or rotation of the models.
 Save the file and run the Build.bat to see the changes in the scene.
 
-<img src="">
-
-## <====================SCENE====================>
-<img src="">
-
 
 ## <====================BIBLIOGRAPHIE====================>
 https://www.khronos.org/registry/OpenGL/api/GL/glcorearb.h
