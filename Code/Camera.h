@@ -31,9 +31,8 @@ struct Camera
 
 void InitCamera(Camera &camera)
 {
-    //camera.position = vec3(0, 0, -2);
+    camera.position = vec3(0, 0, -2);
     //camera.position = vec3(2, -54.32f, 79.0f);
-    camera.position = vec3(-87.0f, -54.32f, -85.6f);
     camera.scale = vec3(1, 1, 1);
     camera.rotation.y = PiOver2;
 }

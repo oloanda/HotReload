@@ -11,14 +11,14 @@ Faster of all, make sure to have Visual Studio installed.
 2 - Run the Build.bat file from the root folder of this repository.
 3 - Run the Run.bat file from the root folder of this repository or go to the Build folder and double-click on Main.exe.
 
-while the program is running open the file platform, find the function 
+While the program is running open the file platform, find the function 
 UPDATE and change the scale, position or rotation of the models.
 Save the file and run the Build.bat to see the changes in the scene.
 
-<img src="platform.png">
+<img src="">
 
 ## <====================SCENE====================>
-<img src="screeshot03.png">
+<img src="">
 
 
 ## <====================BIBLIOGRAPHIE====================>

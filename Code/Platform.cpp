@@ -178,47 +178,12 @@ extern "C" UPDATE_GAME(UpdateGame)
     Printvec3(camera->position);
 
 
-
-    //Conference
-    //*transforms[0] = Scale(vec3(1, 1, 1));
-    *transforms[0] = Scale(vec3(0.2f, 0.2f, 0.2f));
-    *transforms[0] = *transforms[0] * YRotation(-90);
-    *transforms[0] = *transforms[0] * ZRotation(-180);
-    *transforms[0] = *transforms[0] * Translation(vec3(0, 0, 6));
-
-    //Printmat4(*transforms[0]);
-    
-    //Ahri
-    *transforms[1] = Scale(vec3(2, 2, 2));
-    *transforms[1] = *transforms[1] * XRotation(180);
-    *transforms[1] = *transforms[1] * YRotation(angle);
-    *transforms[1] = *transforms[1] * Translation(vec3(50, 0, 300));
-
-    //Fiora
-    *transforms[2]  = Transform(vec3(0.6f, 0.6f, 0.6f), vec3(180, -45, 0), 
-    vec3(-160, 0, 300));
-
-
-    //Alduin
-    *transforms[3] = Scale(vec3(0.04f, 0.04f, 0.04f));
-    *transforms[3]  = *transforms[3] * YRotation(-90) * ZRotation(180); 
-    *transforms[3]  = *transforms[3] * Translation(vec3(-40, -35, 100));
-
-    //Bunny
-    *transforms[4] = Scale(vec3(10, 10, 10));
-    *transforms[4] = *transforms[4] * ZRotation(-180);
-    *transforms[4] = *transforms[4] * YRotation(-angle);
-    *transforms[4] = *transforms[4] * Translation(vec3(-30, -35, 50));
-
-    //Robot
-    *transforms[5] = Scale(vec3(12, 12, 12));
-    *transforms[5] = *transforms[5] * ZRotation(-180);
-    *transforms[5] = *transforms[5] * YRotation(-225);
-    *transforms[5] = *transforms[5] * Translation(vec3(-150, 0, 100));
-
+    //Cube
+    *transforms[0] = Scale(vec3(1, 1, 1));
+    *transforms[0] = *transforms[0] * Translation(vec3(1, 0, 2));
 
     //Cube
-    *transforms[6] = Scale(vec3(30, 30, 30));
-    *transforms[6] = *transforms[6] * Translation(vec3(-110, -15, 100));
+    *transforms[1] = Scale(vec3(1, 1, 1));
+    *transforms[1] = *transforms[1] * Translation(vec3(-1, 0, 2));
 
 }

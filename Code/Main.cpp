@@ -481,7 +481,7 @@ static void UpdateCamera(Camera& camera,WindowDimension windowDimension,Input& i
 
     camera.view = Transform(vec3(1, -1, 1), vec3(camera.rotation.x, camera.rotation.y, 0), camera.position);
     camera.view = FastInverse(camera.view);
-    camera.projection = Projection(60.0f, (float)gScreenWidth / (float)gScreenHeight, 25.0f, 10000.0f);
+    camera.projection = Projection(60.0f, (float)gScreenWidth / (float)gScreenHeight, 0.1f, 1000.0f);
 
     camera.viewProjection = camera.view * camera.projection;
 
@@ -492,7 +492,7 @@ static void ProcessInput(Input& input,WindowDimension windowDimension,Memory* me
 {
     if(input.F && !wasScreenShot)
     {
-        if(screenShot)
+        //if(screenShot)
         {
             SaveScreenShot(memory, windowDimension);
         }
@@ -584,38 +584,18 @@ int main(int argc, const char** argv)
     glBindBufferRange(GL_UNIFORM_BUFFER, 0, uboMatrice,0, bufferSize);
 
 
-
-    Model conference = CreateObjVAO("../Assets/conference.obj", &memory);
-
-    Model Ahri = CreateObjVAO("../Assets/AhriKDA.obj", &memory);
-
-    Model Fiora = CreateObjVAO("../Assets/Fiora.obj", &memory);
-
-    Model Alduin = CreateObjVAO("../Assets/Alduin.obj", &memory);
-
-    Model Bunny = CreateObjVAO("../Assets/bunny.obj", &memory);
-
-    Model Robot = CreateObjVAO("../Assets/robot.obj", &memory);
-
     Model Cube = CreateCube();
     Cube.meshes[0].material.diffuse = vec3(0.5f,0.0f , 0.5f);
+
+    Model Sphere = CreateCube();
+    Sphere.meshes[0].material.diffuse = vec3(0,1,1);
 
 
     mat4* transforms[7];
     transforms[0] = (mat4 *)MyMalloc(&tempMemory, sizeof(mat4));
-    transforms[0] = &conference.modelMatrix;
+    transforms[0] = &Cube.modelMatrix;
     transforms[1] = (mat4 *)MyMalloc(&tempMemory, sizeof(mat4));
-    transforms[1] = &Ahri.modelMatrix;
-    transforms[2] = (mat4 *)MyMalloc(&tempMemory, sizeof(mat4));
-    transforms[2] = &Fiora.modelMatrix;
-    transforms[3] = (mat4 *)MyMalloc(&tempMemory, sizeof(mat4));
-    transforms[3] = &Alduin.modelMatrix;
-    transforms[4] = (mat4 *)MyMalloc(&tempMemory, sizeof(mat4));
-    transforms[4] = &Bunny.modelMatrix;
-    transforms[5] = (mat4 *)MyMalloc(&tempMemory, sizeof(mat4));
-    transforms[5] = &Robot.modelMatrix;
-    transforms[6] = (mat4 *)MyMalloc(&tempMemory, sizeof(mat4));
-    transforms[6] = &Cube.modelMatrix;
+    transforms[1] = &Sphere.modelMatrix;
 
     Camera camera = {};
     InitCamera(camera);
@@ -689,21 +669,9 @@ int main(int argc, const char** argv)
             glClearColor(0.1f, 0.1f, 0.1f, 1.f);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-            DrawModel(conference, &shader, camera);
-
-
-            DrawModel(Ahri, &shader,camera);
-
-            DrawModel(Fiora, &shader,camera);
-
-            DrawModel(Alduin, &shader,camera);
-
-            if((frameCounter / 60) % 2)
-                DrawModel(Bunny, &shader,camera);
-
-            DrawModel(Robot, &shader,camera);
 
             DrawModel(Cube, &shader,camera);
+            DrawModel(Sphere, &shader,camera);
             
             if (!SwapBuffers(dc))
             {
